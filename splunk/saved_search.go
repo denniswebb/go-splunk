@@ -41,7 +41,7 @@ type SavedSearch struct {
 	// Set the address of the MTA server to be used to send the emails.Defaults to <LOCALHOST> (or whatever is set in alert_actions.conf).
 	ActionEmailMailserver string `schema:"action_email_mailserver" xml:"action.email.mailserver"`
 
-	// Sets the global maximum number of search results to send when email.action is enabled.Defaults to 100.
+	// Sets the global maximum number of search results to send when email.action is enabled.
 	ActionEmailMaxResults int `schema:"action_email_maxresults" xml:"action.email.maxresults"`
 
 	// Valid values are Integer[m|s|h|d].Specifies the maximum amount of time the execution of an email action takes before the action is aborted. Defaults to 5m.
@@ -138,7 +138,7 @@ type SavedSearch struct {
 	ActionRSSMaxTime string `schema:"action_rss_maxtime" xml:"action.rss.maxtime"`
 
 	// Indicates whether the execution of this action signifies a trackable alert.
-	ActionRSSTrackAlert int `schema:"action_rss_track_alert" xml:"action.rss.track_alert"`
+	ActionRSSTrackAlert bool `schema:"action_rss_track_alert" xml:"action.rss.track_alert"`
 
 	// Specifies the minimum time-to-live in seconds of the search artifacts if this action is triggered.
 	ActionRSSTTL string `schema:"action_rss_ttl" xml:"action.rss.ttl"`
@@ -162,7 +162,7 @@ type SavedSearch struct {
 	ActionScriptMaxTime string `schema:"action_script_maxtime" xml:"action.script.maxtime"`
 
 	// Indicates whether the execution of this action signifies a trackable alert.
-	ActionScriptTrackAlert int `schema:"action_script_track_alert" xml:"action.script.track_alert"`
+	ActionScriptTrackAlert bool `schema:"action_script_track_alert" xml:"action.script.track_alert"`
 
 	// Specifies the minimum time-to-live in seconds of the search artifacts if this action is triggered.
 	ActionScriptTTL string `schema:"action_script_ttl" xml:"action.script.ttl"`
@@ -264,7 +264,7 @@ type SavedSearch struct {
 	AutoSummarizeMaxTime int `schema:"auto_summarize_max_time" xml:"auto_summarize.max_time"`
 
 	// Time specfier indicating when to suspend summarization of this search if the summarization is deemed unhelpful.
-	AutoSummarizeSuspendPeriod int `schema:"auto_summarize_suspend_period" xml:"auto_summarize.suspend_period"`
+	AutoSummarizeSuspendPeriod string `schema:"auto_summarize_suspend_period" xml:"auto_summarize.suspend_period"`
 
 	// The list of time ranges that each summarized chunk should span. This comprises the list of available granularity levels for which summaries would be available. Specify a comma delimited list of time specifiers.For example a timechart over the last month whose granuality is at the day level should set this to 1d. If you need the same data summarized at the hour level for weekly charts, use: 1h,1d.
 	AutoSummarizeTimespan string `schema:"auto_summarize_timespan" xml:"auto_summarize.timespan"`
