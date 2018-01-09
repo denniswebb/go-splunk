@@ -2,6 +2,7 @@ package splunk
 
 import (
 	"fmt"
+	"net/url"
 )
 
 type SavedSearch struct {
@@ -46,6 +47,9 @@ type SavedSearch struct {
 
 	// Valid values are Integer[m|s|h|d].Specifies the maximum amount of time the execution of an email action takes before the action is aborted. Defaults to 5m.
 	ActionEmailMaxTime string `schema:"action_email_maxtime" xml:"action.email.maxtime"`
+
+	// Sets the message content of an email alert
+	ActionEmailMessageAlert string `schema:"action_email_message_alert" xml:"action.email.message.alert"`
 
 	// The name of the view to deliver if sendpdf is enabled
 	ActionEmailPDFView string `schema:"action_email_pdfview" xml:"action.email.pdfview"`
@@ -166,6 +170,15 @@ type SavedSearch struct {
 
 	// Specifies the minimum time-to-live in seconds of the search artifacts if this action is triggered.
 	ActionScriptTTL string `schema:"action_script_ttl" xml:"action.script.ttl"`
+
+	// Read-only attribute. The state of the slack action. Value ignored on POST. Use Actions to specify a list of enabled actions.
+	ActionSlack bool `schema:"action_slack" xml:"action.slack"`
+
+	// The password to use when authenticating with the SMTP server. Normally this value will be set when editing the email settings, however you can set a clear text password here and it will be encrypted on the next Splunk restart.Defaults to empty string.
+	ActionSlackChannel string `schema:"action_slack_param_channel" xml:"action.slack.param.channel"`
+
+	// BCC email address to use ction.email.cc" xml:"action.email.cc"`
+	ActionSlackMessage string `schema:"action_slack_param_message" xml:"action.slack.param.message"`
 
 	// Read-only attribute. The state of the summary index action. Value ignored on POST. Use actions to specify a list of enabled actions.
 	ActionSummaryIndex int `schema:"action_summary_index" xml:"action.summary_index"`
@@ -371,7 +384,7 @@ func (c *Client) SavedSearchCreate(s *SavedSearch) (r SavedSearch, e error) {
 }
 
 func (c *Client) SavedSearchRead(name string) (r SavedSearch, e error) {
-	f, e := c.Get(fmt.Sprintf(PathSavedSearchUpdate, name))
+	f, e := c.Get(fmt.Sprintf(PathSavedSearchUpdate, url.QueryEscape(name)))
 	if e != nil {
 		return
 	}
@@ -382,7 +395,7 @@ func (c *Client) SavedSearchRead(name string) (r SavedSearch, e error) {
 
 // SavedSearchDelete deletes a Saved Search from Splunk
 func (c *Client) SavedSearchDelete(name string) (e error) {
-	return c.Delete(fmt.Sprintf(PathSavedSearchUpdate, name))
+	return c.Delete(fmt.Sprintf(PathSavedSearchUpdate, url.QueryEscape(name)))
 }
 
 func (c *Client) SavedSearchUpdate(savedSearch *SavedSearch) (r SavedSearch, e error) {
@@ -393,7 +406,7 @@ func (c *Client) SavedSearchUpdate(savedSearch *SavedSearch) (r SavedSearch, e e
 
 	// Delete name param as it's not allow in Post on Update
 	delete(params, "name")
-	f, e := c.Post(fmt.Sprintf(PathSavedSearchUpdate, savedSearch.Name), params)
+	f, e := c.Post(fmt.Sprintf(PathSavedSearchUpdate, url.QueryEscape(savedSearch.Name)), params)
 	if e != nil {
 		return
 	}
