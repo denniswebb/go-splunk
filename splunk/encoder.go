@@ -7,13 +7,8 @@ import (
 )
 
 var (
-	decoder = schema.NewDecoder()
 	encoder = schema.NewEncoder()
 )
-
-func init() {
-	encoder.SetAliasTag("xml")
-}
 
 func encode(i interface{}) (r url.Values, e error) {
 	r = url.Values{}
