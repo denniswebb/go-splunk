@@ -17,7 +17,8 @@ import (
 
 const (
 	PathSavedSearchCreate = "saved/searches"
-	PathSavedSearchUpdate = "saved/searches/%s"
+	PathSavedSearch       = "saved/searches/%s"
+	PathSavedSearchACL    = "saved/searches/%s/acl"
 )
 
 // Client communicates with the Splunk rest endpoint.
@@ -25,13 +26,26 @@ type Client struct {
 	client *resty.Client
 }
 
-// Feed is used to store Splunk response Atom feeds
-type Feed struct {
-	atom.Feed
-	Entry []*Entry `xml:"entry"`
+// Response is used to store Splunk response Atom feeds
+type Response struct {
+	Links     map[string]string `json:"links"`
+	Origin    string            `json:"origin"`
+	Updated   string            `json:"updated"`
+	Entry    []Entry       `json:"entry"`
+	Messages []string `json:"messages"`
 }
 
 // Entry is used to store Splunk response Atom entries
+type Entry struct {
+	Name    string                 `json:"name"`
+	ID      string                 `json:"id"`
+	Updated string                 `json:"updated"`
+	Links   map[string]string      `json:"links"`
+	Author  string                 `json:"author"`
+	Content map[string]interface{} `json:"content"`
+}
+
+
 type Entry struct {
 	atom.Entry
 	Property []Property `xml:"content>dict>key"`
@@ -40,6 +54,15 @@ type Entry struct {
 type Property struct {
 	Name  string `xml:"name,attr"`
 	Value string `xml:",chardata"`
+	Raw []byte `xml:",innerxml"`
+}
+
+type Dict struct {
+	Property []Property `xml:"key"`
+}
+
+type List struct {
+	Item []string `xml:"item"`
 }
 
 type RestError struct {
@@ -47,20 +70,46 @@ type RestError struct {
 }
 
 // PropertyLookup returns the value of property from an Entry's Property slice
-func (entry *Entry) PropertyLookup(name string) string {
-	for _, p := range entry.Property {
-		if p.Name == name {
-			return p.Value
+func (entry *Entry) PropertyLookup(name string) *Property {
+	return propertyLookup(entry.Property, name)
+}
+
+func (dict *Dict) PropertyLookup(name string) *Property {
+	return propertyLookup(dict.Property, name)
+}
+
+func propertyLookup(p []Property, n string) *Property{
+	for _, v := range p {
+		if v.Name == n {
+			return &v
 		}
 	}
-	return ""
+	return &Property{}
+}
+
+func (p *Property) Dict() (d Dict) {
+	_ = xml.Unmarshal(p.Raw, &d)
+	return
+}
+
+func (p *Property) List() (l List) {
+	_ = xml.Unmarshal(p.Raw, &l)
+	return
 }
 
 // PropertyMap returns a map[string][]string from an Entry's Property slice
 func (entry *Entry) PropertyMap() (m map[string][]string) {
+	return propertyMap(entry.Property)
+}
+
+func (dict *Dict) PropertyMap() (m map[string][]string) {
+	return propertyMap(dict.Property)
+}
+
+func propertyMap(p []Property) (m map[string][]string){
 	m = map[string][]string{}
-	for _, p := range entry.Property {
-		m[strings.Replace(p.Name, ".", "_", -1)] = []string{p.Value}
+	for _, v := range p {
+		m[strings.Replace(v.Name, ".", "_", -1)] = []string{v.Value}
 	}
 	return
 }

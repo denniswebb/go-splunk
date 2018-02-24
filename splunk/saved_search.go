@@ -7,6 +7,8 @@ import (
 
 type SavedSearch struct {
 	Name   string `schema:"name" xml:"name"`
+	ACL ACL `schema:"-" xml:"-"`
+
 	Search string `schema:"search" xml:"search"`
 
 	// Read-only attribute. The state of the email action. Value ignored on POST. Use Actions to specify a list of enabled actions.
@@ -364,8 +366,8 @@ type SavedSearch struct {
 	VSID string `schema:"vsid" xml:"vsid"`
 }
 
-func (c *Client) SavedSearchPost(savedSearch *SavedSearch, path string) (r SavedSearch, e error) {
-	params, e := encode(savedSearch)
+func (c *Client) SavedSearchPost(s *SavedSearch, path string) (r SavedSearch, e error) {
+	params, e := encode(s)
 	if e != nil {
 		return
 	}
@@ -380,38 +382,48 @@ func (c *Client) SavedSearchPost(savedSearch *SavedSearch, path string) (r Saved
 }
 
 func (c *Client) SavedSearchCreate(s *SavedSearch) (r SavedSearch, e error) {
-	return c.SavedSearchPost(s, PathSavedSearchCreate)
+	r,e = c.SavedSearchPost(s, PathSavedSearchCreate)
+	if e != nil {
+		return
+	}
+
+	//_, e = c.ACLPost(&s.ACL, fmt.Sprintf(PathSavedSearchACL,url.QueryEscape(s.Name)))
+	return
 }
 
 func (c *Client) SavedSearchRead(name string) (r SavedSearch, e error) {
-	f, e := c.Get(fmt.Sprintf(PathSavedSearchUpdate, url.QueryEscape(name)))
+	f, e := c.Get(fmt.Sprintf(PathSavedSearch, url.QueryEscape(name)))
 	if e != nil {
 		return
 	}
 
 	r = feedToSavedSearch(f)
+	r.ACL = feedToACL(f)
 	return
 }
 
 // SavedSearchDelete deletes a Saved Search from Splunk
 func (c *Client) SavedSearchDelete(name string) (e error) {
-	return c.Delete(fmt.Sprintf(PathSavedSearchUpdate, url.QueryEscape(name)))
+	return c.Delete(fmt.Sprintf(PathSavedSearch, url.QueryEscape(name)))
 }
 
-func (c *Client) SavedSearchUpdate(savedSearch *SavedSearch) (r SavedSearch, e error) {
-	params, e := encode(savedSearch)
+func (c *Client) SavedSearchUpdate(s *SavedSearch) (r SavedSearch, e error) {
+	params, e := encode(s)
 	if e != nil {
 		return
 	}
 
 	// Delete name param as it's not allow in Post on Update
 	delete(params, "name")
-	f, e := c.Post(fmt.Sprintf(PathSavedSearchUpdate, url.QueryEscape(savedSearch.Name)), params)
+	f, e := c.Post(fmt.Sprintf(PathSavedSearch, url.QueryEscape(s.Name)), params)
 	if e != nil {
 		return
 	}
 
 	r = feedToSavedSearch(f)
+
+	//_, e = c.ACLPost(&s.ACL, fmt.Sprintf(PathSavedSearchACL, url.QueryEscape(s.Name)))
+
 	return
 }
 
