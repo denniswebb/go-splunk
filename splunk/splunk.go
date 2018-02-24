@@ -2,23 +2,16 @@ package splunk
 
 import (
 	"crypto/tls"
+	"errors"
 	"fmt"
 	"net/url"
 
-	"encoding/xml"
-
-	"errors"
-
-	"strings"
-
-	"golang.org/x/tools/blog/atom"
 	"gopkg.in/resty.v1"
 )
 
 const (
-	PathSavedSearchCreate = "saved/searches"
-	PathSavedSearch       = "saved/searches/%s"
-	PathSavedSearchACL    = "saved/searches/%s/acl"
+	PathSavedSearchCreate = "/services/saved/searches"
+	PathSavedSearch       = "/services/saved/searches/%s"
 )
 
 // Client communicates with the Splunk rest endpoint.
@@ -26,92 +19,28 @@ type Client struct {
 	client *resty.Client
 }
 
-// Response is used to store Splunk response Atom feeds
-type Response struct {
-	Links     map[string]string `json:"links"`
-	Origin    string            `json:"origin"`
-	Updated   string            `json:"updated"`
-	Entry    []Entry       `json:"entry"`
-	Messages []string `json:"messages"`
+// Feed is used to store Splunk response Atom feeds
+type Feed struct {
+	Links    map[string]string `schema:"-" json:"links"`
+	Origin   string            `schema:"-" json:"origin"`
+	Updated  string            `schema:"-" json:"updated"`
+	Entry    []Entry           `schema:"-" json:"entry"`
+	Messages []Message         `schema:"-" json:"messages"`
 }
 
 // Entry is used to store Splunk response Atom entries
 type Entry struct {
-	Name    string                 `json:"name"`
-	ID      string                 `json:"id"`
-	Updated string                 `json:"updated"`
-	Links   map[string]string      `json:"links"`
-	Author  string                 `json:"author"`
-	Content map[string]interface{} `json:"content"`
+	Name    string                 `schema:"-" json:"name"`
+	ID      string                 `schema:"-" json:"id"`
+	Updated string                 `schema:"-" json:"updated"`
+	Links   map[string]string      `schema:"-" json:"links"`
+	Author  string                 `schema:"-" json:"author"`
+	Content map[string]interface{} `schema:"-" json:"content"`
 }
 
-
-type Entry struct {
-	atom.Entry
-	Property []Property `xml:"content>dict>key"`
-}
-
-type Property struct {
-	Name  string `xml:"name,attr"`
-	Value string `xml:",chardata"`
-	Raw []byte `xml:",innerxml"`
-}
-
-type Dict struct {
-	Property []Property `xml:"key"`
-}
-
-type List struct {
-	Item []string `xml:"item"`
-}
-
-type RestError struct {
-	Message string `xml:"messages>msg"`
-}
-
-// PropertyLookup returns the value of property from an Entry's Property slice
-func (entry *Entry) PropertyLookup(name string) *Property {
-	return propertyLookup(entry.Property, name)
-}
-
-func (dict *Dict) PropertyLookup(name string) *Property {
-	return propertyLookup(dict.Property, name)
-}
-
-func propertyLookup(p []Property, n string) *Property{
-	for _, v := range p {
-		if v.Name == n {
-			return &v
-		}
-	}
-	return &Property{}
-}
-
-func (p *Property) Dict() (d Dict) {
-	_ = xml.Unmarshal(p.Raw, &d)
-	return
-}
-
-func (p *Property) List() (l List) {
-	_ = xml.Unmarshal(p.Raw, &l)
-	return
-}
-
-// PropertyMap returns a map[string][]string from an Entry's Property slice
-func (entry *Entry) PropertyMap() (m map[string][]string) {
-	return propertyMap(entry.Property)
-}
-
-func (dict *Dict) PropertyMap() (m map[string][]string) {
-	return propertyMap(dict.Property)
-}
-
-func propertyMap(p []Property) (m map[string][]string){
-	m = map[string][]string{}
-	for _, v := range p {
-		m[strings.Replace(v.Name, ".", "_", -1)] = []string{v.Value}
-	}
-	return
+type Message struct {
+	Type string `json:"type"`
+	Text string `json:"text"`
 }
 
 // New returns a fully configured client
@@ -119,17 +48,17 @@ func New(URL, Username, Password string, InsecureSkipVerify bool) *Client {
 	c := &Client{}
 	c.client = resty.New().
 		SetBasicAuth(Username, Password).
-		SetHostURL(fmt.Sprintf("%s/services/", URL)).
+		SetHostURL(fmt.Sprintf("%s", URL)).
 		SetHeader("Content-Type", "application/x-www-form-urlencoded").
+		SetQueryParam("output_mode", "json").
 		SetMode("rest").
 		SetTLSClientConfig(&tls.Config{InsecureSkipVerify: InsecureSkipVerify})
 
 	return c
 }
 
-func (c *Client) Get(path string) (f Feed, e error) {
+func (c *Client) Get(path string) (b []byte, e error) {
 	r, e := c.client.R().
-		SetResult(f).
 		Get(path)
 	if e != nil {
 		return
@@ -140,14 +69,13 @@ func (c *Client) Get(path string) (f Feed, e error) {
 		return
 	}
 
-	e = xml.Unmarshal(r.Body(), &f)
+	b = r.Body()
 	return
 }
 
-func (c *Client) Post(path string, data url.Values) (f Feed, e error) {
+func (c *Client) Post(path string, data url.Values) (b []byte, e error) {
 	r, e := c.client.R().
 		SetMultiValueFormData(data).
-		SetResult(f).
 		Post(path)
 	if e != nil {
 		return
@@ -158,7 +86,7 @@ func (c *Client) Post(path string, data url.Values) (f Feed, e error) {
 		return
 	}
 
-	e = xml.Unmarshal(r.Body(), &f)
+	b = r.Body()
 	return
 }
 
@@ -177,9 +105,7 @@ func checkStatusCode(r *resty.Response) (e error) {
 	if !(s >= 200 && s <= 299) {
 		eMsg := fmt.Sprintf("Unexpected response from Splunk: %d", s)
 		if s >= 400 && s <= 499 {
-			re := RestError{}
-			xml.Unmarshal(r.Body(), &re)
-			eMsg += fmt.Sprintf("\n%s", re.Message)
+			eMsg += fmt.Sprintf("\n%s", string(r.Body()))
 		}
 		e = errors.New(eMsg)
 	}
