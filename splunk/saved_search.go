@@ -21,7 +21,7 @@ type SavedSearch struct {
 
 type SavedSearchConfiguration struct {
 	// Read-only attribute. The state of the email action. Value ignored on POST. Use Actions to specify a list of enabled actions.
-	ActionEmail bool `schema:"action.email,omitempty" json:"action.email"`
+	ActionEmail bool `schema:"-" json:"action.email"`
 
 	// The password to use when authenticating with the SMTP server. Normally this value will be set when editing the email settings, however you can set a clear text password here and it will be encrypted on the next Splunk restart.Defaults to empty string.
 	ActionEmailAuthPassword string `schema:"action.email.auth_password,omitempty" json:"action.email.auth_password"`
@@ -48,7 +48,7 @@ type SavedSearchConfiguration struct {
 	ActionEmailHostname string `schema:"action.email.hostname,omitempty" json:"action.email.hostname"`
 
 	// Indicates whether the search results are contained in the body of the email.Results can be either inline or attached to an email. See action.email.sendresults.
-	ActionEmailInline bool `schema:"action.email.inline,omitempty" json:"action.email.inline"`
+	ActionEmailInline bool `schema:"action.email.inline" json:"action.email.inline"`
 
 	// Set the address of the MTA server to be used to send the emails.Defaults to <LOCALHOST> (or whatever is set in alert_actions.conf).
 	ActionEmailMailserver string `schema:"action.email.mailserver,omitempty" json:"action.email.mailserver"`
@@ -72,7 +72,7 @@ type SavedSearchConfiguration struct {
 	ActionEmailReportCIDFontList string `schema:"action.email.reportCIDFontList,omitempty" json:"action.email.reportCIDFontList"`
 
 	// Indicates whether to include the Splunk logo with the report.
-	ActionEmailReportIncludeSplunkLogo bool `schema:"action.email.reportIncludeSplunkLogo,omitempty" json:"action.email.reportIncludeSplunkLogo"`
+	ActionEmailReportIncludeSplunkLogo bool `schema:"action.email.reportIncludeSplunkLogo" json:"action.email.reportIncludeSplunkLogo"`
 
 	// Valid values: (portrait | landscape)Specifies the paper orientation: portrait or landscape. Defaults to portrait.
 	ActionEmailReportPaperOrientation string `schema:"action.email.reportPaperOrientation,omitempty" json:"action.email.reportPaperOrientation"`
@@ -81,16 +81,16 @@ type SavedSearchConfiguration struct {
 	ActionEmailReportPaperSize string `schema:"action.email.reportPaperSize,omitempty" json:"action.email.reportPaperSize"`
 
 	// Indicates whether the PDF server is enabled. Defaults to false.
-	ActionEmailReportServerEnabled bool `schema:"action.email.reportServerEnabled,omitempty" json:"action.email.reportServerEnabled"`
+	ActionEmailReportServerEnabled bool `schema:"action.email.reportServerEnabled" json:"action.email.reportServerEnabled"`
 
 	// The URL of the PDF report server, if one is set up and available on the network.For a default locally installed report server, the URL is http: localhost:8091/
 	ActionEmailReportServerURL string `schema:"action.email.reportServerURL,omitempty" json:"action.email.reportServerURL"`
 
 	// Indicates whether to create and send the results as a PDF. Defaults to false.
-	ActionEmailSendPDF bool `schema:"action.email.sendpdf,omitempty" json:"action.email.sendpdf"`
+	ActionEmailSendPDF bool `schema:"action.email.sendpdf" json:"action.email.sendpdf"`
 
 	// Indicates whether to attach the search results in the email.Results can be either attached or inline. See action.email.inline.
-	ActionEmailSendResults bool `schema:"action.email.sendresults,omitempty" json:"action.email.sendresults"`
+	ActionEmailSendResults bool `schema:"action.email.sendresults" json:"action.email.sendresults"`
 
 	// Specifies an alternate email subject.Defaults to SplunkAlert-<savedsearchname>.
 	ActionEmailSubject string `schema:"action.email.subject,omitempty" json:"action.email.subject"`
@@ -99,22 +99,22 @@ type SavedSearchConfiguration struct {
 	ActionEmailTo string `schema:"action.email.to,omitempty" json:"action.email.to"`
 
 	// Indicates whether the execution of this action signifies a trackable alert.
-	ActionEmailTrackAlert bool `schema:"action.email.track_alert,omitempty" json:"action.email.track_alert"`
+	ActionEmailTrackAlert bool `schema:"action.email.track_alert" json:"action.email.track_alert"`
 
 	// Specifies the minimum time-to-live in seconds of the search artifacts if this action is triggered.
 	ActionEmailTTL string `schema:"action.email.ttl,omitempty" json:"action.email.ttl"`
 
 	// Indicates whether to use SSL when communicating with the SMTP server.Defaults to false.
-	ActionEmailUseSSL bool `schema:"action.email.use_ssl,omitempty" json:"action.email.use_ssl"`
+	ActionEmailUseSSL bool `schema:"action.email.use_ssl" json:"action.email.use_ssl"`
 
 	// Indicates whether to use TLS (transport layer security) when communicating with the SMTP server (starttls).Defaults to false.
-	ActionEmailUseTLS bool `schema:"action.email.use_tls,omitempty" json:"action.email.use_tls"`
+	ActionEmailUseTLS bool `schema:"action.email.use_tls" json:"action.email.use_tls"`
 
 	// Indicates whether columns should be sorted from least wide to most wide, left to right.Only valid if format=text.
-	ActionEmailWidthSortColumns bool `schema:"action.email.width_sort_columns,omitempty" json:"action.email.width_sort_columns"`
+	ActionEmailWidthSortColumns bool `schema:"action.email.width_sort_columns" json:"action.email.width_sort_columns"`
 
 	// Read-only attribute. The state of the populate lookup action. Value ignored on POST. Use actions to specify a list of enabled actions.
-	ActionPopulateLookup bool `schema:"action.populate_lookup,omitempty" json:"action.populate_lookup"`
+	ActionPopulateLookup bool `schema:"action.populate_lookup" json:"action.populate_lookup"`
 
 	// The search command (or pipeline) which is responsible for executing the action.Generally the command is a template search pipeline which is realized with values from the saved search. To reference saved search field values wrap them in $, for example to reference the savedsearch name use $name$, to reference the search use $search$.
 	ActionPopulateLookupCommand string `schema:"action.populate_lookup.command,omitempty" json:"action.populate_lookup.command"`
@@ -132,13 +132,13 @@ type SavedSearchConfiguration struct {
 	ActionPopulateLookupMaxTime string `schema:"action.populate_lookup.maxtime,omitempty" json:"action.populate_lookup.maxtime"`
 
 	// Indicates whether the execution of this action signifies a trackable alert.
-	ActionPopulateLookupTrackAlert bool `schema:"action.populate_lookup.track_alert,omitempty" json:"action.populate_lookup.track_alert"`
+	ActionPopulateLookupTrackAlert bool `schema:"action.populate_lookup.track_alert" json:"action.populate_lookup.track_alert"`
 
 	// Specifies the minimum time-to-live in seconds of the search artifacts if this action is triggered.
 	ActionPopulateLookupTTL string `schema:"action.populate_lookup.ttl,omitempty" json:"action.populate_lookup.ttl"`
 
 	// Read-only attribute. The state of the rss action. Value ignored on POST. Use actions to specify a list of enabled actions.
-	ActionRSS bool `schema:"action.rss,omitempty" json:"action.rss"`
+	ActionRSS bool `schema:"-" json:"action.rss"`
 
 	// The search command (or pipeline) which is responsible for executing the action.Generally the command is a template search pipeline which is realized with values from the saved search. To reference saved search field values wrap them in $, for example to reference the savedsearch name use $name$, to reference the search use $search$.
 	ActionRSSCommand string `schema:"action.rss.command,omitempty" json:"action.rss.command"`
@@ -153,13 +153,13 @@ type SavedSearchConfiguration struct {
 	ActionRSSMaxTime string `schema:"action.rss.maxtime,omitempty" json:"action.rss.maxtime"`
 
 	// Indicates whether the execution of this action signifies a trackable alert.
-	ActionRSSTrackAlert bool `schema:"action.rss.track_alert,omitempty" json:"action.rss.track_alert"`
+	ActionRSSTrackAlert bool `schema:"action.rss.track_alert" json:"action.rss.track_alert"`
 
 	// Specifies the minimum time-to-live in seconds of the search artifacts if this action is triggered.
 	ActionRSSTTL string `schema:"action.rss.ttl,omitempty" json:"action.rss.ttl"`
 
 	// Read-only attribute. The state of the script action. Value ignored on POST. Use actions to specify a list of enabled actions.
-	ActionScript bool `schema:"action.script,omitempty" json:"action.script"`
+	ActionScript bool `schema:"-" json:"action.script"`
 
 	// The search command (or pipeline) which is responsible for executing the action.Generally the command is a template search pipeline which is realized with values from the saved search. To reference saved search field values wrap them in $, for example to reference the savedsearch name use $name$, to reference the search use $search$.
 	ActionScriptCommand string `schema:"action.script.command,omitempty" json:"action.script.command"`
@@ -177,13 +177,13 @@ type SavedSearchConfiguration struct {
 	ActionScriptMaxTime string `schema:"action.script.maxtime,omitempty" json:"action.script.maxtime"`
 
 	// Indicates whether the execution of this action signifies a trackable alert.
-	ActionScriptTrackAlert bool `schema:"action.script.track_alert,omitempty" json:"action.script.track_alert"`
+	ActionScriptTrackAlert bool `schema:"action.script.track_alert" json:"action.script.track_alert"`
 
 	// Specifies the minimum time-to-live in seconds of the search artifacts if this action is triggered.
 	ActionScriptTTL string `schema:"action.script.ttl,omitempty" json:"action.script.ttl"`
 
 	// Read-only attribute. The state of the slack action. Value ignored on POST. Use Actions to specify a list of enabled actions.
-	ActionSlack bool `schema:"action.slack,omitempty" json:"action.slack"`
+	ActionSlack bool `schema:"-" json:"action.slack"`
 
 	// The password to use when authenticating with the SMTP server. Normally this value will be set when editing the email settings, however you can set a clear text password here and it will be encrypted on the next Splunk restart.Defaults to empty string.
 	ActionSlackChannel string `schema:"action.slack.param.channel,omitempty" json:"action.slack.param.channel"`
@@ -204,7 +204,7 @@ type SavedSearchConfiguration struct {
 	ActionSummaryIndexHostname string `schema:"action.summary_index.hostname,omitempty" json:"action.summary_index.hostname"`
 
 	// Determines whether to execute the summary indexing action as part of the scheduled search.
-	ActionSummaryIndexInline bool `schema:"action.summary_index.inline,omitempty" json:"action.summary_index.inline"`
+	ActionSummaryIndexInline bool `schema:"action.summary_index.inline" json:"action.summary_index.inline"`
 
 	// Sets the maximum number of search results sent using alerts. Defaults to 100.
 	ActionSummaryIndexMaxResults int `schema:"action.summary_index.maxresults,omitempty" json:"action.summary_index.maxresults"`
@@ -213,7 +213,7 @@ type SavedSearchConfiguration struct {
 	ActionSummaryIndexMaxTime string `schema:"action.summary_index.maxtime,omitempty" json:"action.summary_index.maxtime"`
 
 	// Indicates whether the execution of this action signifies a trackable alert.
-	ActionSummaryIndexTrackAlert bool `schema:"action.summary_index.track_alert,omitempty" json:"action.summary_index.track_alert"`
+	ActionSummaryIndexTrackAlert bool `schema:"action.summary_index.track_alert" json:"action.summary_index.track_alert"`
 
 	// Specifies the minimum time-to-live in seconds of the search artifacts if this action is triggered.
 	ActionSummaryIndexTTL string `schema:"action.summary_index.ttl,omitempty" json:"action.summary_index.ttl"`
@@ -222,7 +222,7 @@ type SavedSearchConfiguration struct {
 	Actions string `schema:"actions,omitempty" json:"actions"`
 
 	// Specifies whether Splunk applies the alert actions to the entire result set or on each individual result. Defaults to true.
-	AlertDigestMode bool `schema:"alert.digest_mode,omitempty" json:"alert.digest_mode"`
+	AlertDigestMode bool `schema:"alert.digest_mode" json:"alert.digest_mode"`
 
 	// Sets the period of time to show the alert in the dashboard. For example: 60 = 60 seconds, 1m = 1 minute, 1h = 60 minutes = 1 hour.
 	AlertExpires string `schema:"alert.expires,omitempty" json:"alert.expires"`
@@ -231,7 +231,7 @@ type SavedSearchConfiguration struct {
 	AlertSeverity int `schema:"alert.severity,omitempty" json:"alert.severity"`
 
 	// Indicates whether alert suppression is enabled for this scheduled search.
-	AlertSuppress bool `schema:"alert.suppress,omitempty" json:"alert.suppress"`
+	AlertSuppress bool `schema:"alert.suppress" json:"alert.suppress"`
 
 	// Comma delimited list of fields to use for suppression when doing per result alerting. Required if suppression is turned on and per result alerting is enabled.
 	AlertSuppressFields string `schema:"alert.suppress.fields,omitempty" json:"alert.suppress.fields"`
@@ -255,7 +255,7 @@ type SavedSearchConfiguration struct {
 	AlertType string `schema:"alert_type,omitempty" json:"alert_type"`
 
 	// Indicates whether the scheduler should ensure that the data for this search is automatically summarized.
-	AutoSummarize bool `schema:"auto_summarize,omitempty" json:"auto_summarize"`
+	AutoSummarize bool `schema:"auto_summarize" json:"auto_summarize"`
 
 	// A search template that constructs the auto summarization for this search.Caution: Advanced feature. Do not change unless you understand the architecture of auto summarization of saved searches.
 	AutoSummarizeCommand string `schema:"auto_summarize.command,omitempty" json:"auto_summarize.command"`
@@ -300,7 +300,7 @@ type SavedSearchConfiguration struct {
 	Description string `schema:"description,omitempty" json:"description"`
 
 	// Indicates if the saved search is enabled.Disabled saved searches are not visible in Splunk Web.
-	Disabled bool `schema:"disabled,omitempty" json:"disabled"`
+	Disabled bool `schema:"disabled" json:"disabled"`
 
 	// The maximum number of timeline buckets.
 	DispatchBuckets int `schema:"dispatch.buckets,omitempty" json:"dispatch.buckets"`
@@ -309,13 +309,13 @@ type SavedSearchConfiguration struct {
 	DispatchEarliestTime string `schema:"dispatch.earliest_time,omitempty" json:"dispatch.earliest_time"`
 
 	// Indicates whether to used indexed-realtime mode when doing real-time searches.
-	DispatchIndexedRealtime bool `schema:"dispatch.indexedRealtime,omitempty" json:"dispatch.indexedRealtime"`
+	DispatchIndexedRealtime bool `schema:"dispatch.indexedRealtime" json:"dispatch.indexedRealtime"`
 
 	// A time string that specifies the latest time for this saved search. Can be a relative or absolute time.If this value is an absolute time, use the dispatch.time_format to format the value.
 	DispatchLatestTime string `schema:"dispatch.latest_time,omitempty" json:"dispatch.latest_time"`
 
 	// Enables or disables the lookups for this search.
-	DispatchLookups bool `schema:"dispatch.lookups,omitempty" json:"dispatch.lookups"`
+	DispatchLookups bool `schema:"dispatch.lookups" json:"dispatch.lookups"`
 
 	// The maximum number of results before finalizing the search.
 	DispatchMaxCount int `schema:"dispatch.max_count,omitempty" json:"dispatch.max_count"`
@@ -327,10 +327,10 @@ type SavedSearchConfiguration struct {
 	DispatchReduceFreq int `schema:"dispatch.reduce_freq,omitempty" json:"dispatch.reduce_freq"`
 
 	// Whether to back fill the real time window for this search. Parameter valid only if this is a real time search
-	DispatchRtBackfill bool `schema:"dispatch.rt_backfill,omitempty" json:"dispatch.rt_backfill"`
+	DispatchRtBackfill bool `schema:"dispatch.rt_backfill" json:"dispatch.rt_backfill"`
 
 	// Specifies whether Splunk spawns a new search process when this saved search is executed.Searches against indexes must run in a separate process.
-	DispatchSpawnProcess bool `schema:"dispatch.spawn_process,omitempty" json:"dispatch.spawn_process"`
+	DispatchSpawnProcess bool `schema:"dispatch.spawn_process" json:"dispatch.spawn_process"`
 
 	// A time format string that defines the time format that Splunk uses to specify the earliest and latest time.
 	DispatchTimeFormat string `schema:"dispatch.time_format,omitempty" json:"dispatch.time_format"`
@@ -342,10 +342,10 @@ type SavedSearchConfiguration struct {
 	DisplayView string `schema:"displayview,omitempty" json:"displayview"`
 
 	// Whether this search is to be run on a schedule
-	IsScheduled bool `schema:"is_scheduled,omitempty" json:"is_scheduled"`
+	IsScheduled bool `schema:"is_scheduled" json:"is_scheduled"`
 
 	// Specifies whether this saved search should be listed in the visible saved search list.
-	IsVisible bool `schema:"is_visible,omitempty" json:"is_visible"`
+	IsVisible bool `schema:"is_visible" json:"is_visible"`
 
 	// The maximum number of concurrent instances of this search the scheduler is allowed to run.
 	MaxConcurrent int `schema:"max_concurrent,omitempty" json:"max_concurrent"`
@@ -357,7 +357,7 @@ type SavedSearchConfiguration struct {
 	QualifiedSearch string `schema:"qualifiedSearch,omitempty" json:"qualifiedSearch"`
 
 	// Controls the way the scheduler computes the next execution time of a scheduled search.
-	RealtimeSchedule bool `schema:"realtime_schedule,omitempty" json:"realtime_schedule"`
+	RealtimeSchedule bool `schema:"realtime_schedule" json:"realtime_schedule"`
 
 	// Specifies a field used by Splunk UI to denote the app this search should be dispatched in.
 	RequestUIDispatchApp string `schema:"request.ui_dispatch_app,omitempty" json:"request.ui_dispatch_app"`
@@ -366,10 +366,10 @@ type SavedSearchConfiguration struct {
 	RequestUIDispatchView string `schema:"request.ui_dispatch_view,omitempty" json:"request.ui_dispatch_view"`
 
 	// Specifies whether to restart a real-time search managed by the scheduler when a search peer becomes available for this saved search.
-	RestartOnSearchPeerAdd bool `schema:"restart_on_searchpeer_add,omitempty" json:"restart_on_searchpeer_add"`
+	RestartOnSearchPeerAdd bool `schema:"restart_on_searchpeer_add" json:"restart_on_searchpeer_add"`
 
 	// Indicates whether this search runs when Splunk starts. If it does not run on startup, it runs at the next scheduled time.Splunk recommends that you set run_on_startup to true for scheduled searches that populate lookup tables.
-	RunOnStartup bool `schema:"run_on_startup,omitempty" json:"run_on_startup"`
+	RunOnStartup bool `schema:"run_on_startup" json:"run_on_startup"`
 
 	// Search
 	Search string `schema:"search" json:"search"`
